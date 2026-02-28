@@ -4,6 +4,14 @@ require_once 'includes/auth.php';
 verificarSesion();
 require_once 'includes/functions.php';
 require_once 'includes/callcenter_functions.php';
+require_once 'includes/comunicado.php';
+
+// Lógica para mostrar comunicado una sola vez por sesión
+$mostrarComunicado = $comunicado_activo && !isset($_SESSION['comunicado_visto']);
+if ($mostrarComunicado) {
+    $_SESSION['comunicado_visto'] = true;
+}
+
 
 // Parámetros de búsqueda y filtro
 $busqueda     = isset($_GET['buscar'])       ? sanitizar($_GET['buscar'])       : '';
@@ -79,6 +87,95 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
             </nav>
         </div>
     </header>
+
+    <!-- Alerta de Comunicado Simple -->
+    <?php if ($mostrarComunicado): ?>
+    <div id="alert-comunicado" class="gold-alert-container">
+        <div class="gold-alert-content">
+            <div class="gold-alert-header">
+                <i class="fas fa-info-circle"></i> <?php echo htmlspecialchars($comunicado_titulo); ?>
+            </div>
+            <div class="gold-alert-body">
+                <?php echo htmlspecialchars($comunicado_mensaje); ?>
+            </div>
+            <div class="gold-alert-footer">
+                <button onclick="cerrarAlertaGold()" class="btn-gold-alert">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .gold-alert-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 450px;
+            background: #1a1a1a;
+            border: 2px solid var(--color-dorado);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            animation: slideDownAlert 0.4s cubic-bezier(0.17, 0.84, 0.44, 1);
+        }
+        .gold-alert-content {
+            padding: 20px;
+        }
+        .gold-alert-header {
+            color: var(--color-dorado);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .gold-alert-body {
+            color: #fff;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .gold-alert-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .btn-gold-alert {
+            background: var(--color-dorado);
+            color: #000;
+            border: none;
+            padding: 8px 30px;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-gold-alert:hover {
+            background: var(--color-dorado-claro);
+            transform: scale(1.05);
+        }
+        @keyframes slideDownAlert {
+            from { top: -100px; opacity: 0; }
+            to { top: 20px; opacity: 1; }
+        }
+        .fade-out-alert {
+            opacity: 0;
+            top: -100px;
+            transition: all 0.4s ease;
+        }
+    </style>
+
+    <script>
+        function cerrarAlertaGold() {
+            const alert = document.getElementById('alert-comunicado');
+            alert.classList.add('fade-out-alert');
+            setTimeout(() => {
+                alert.remove();
+            }, 400);
+        }
+    </script>
+    <?php endif; ?>
 
     <!-- Contenido Principal -->
     <main class="main-container">
