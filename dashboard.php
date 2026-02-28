@@ -1,5 +1,7 @@
 <?php
 require_once 'includes/config.php';
+require_once 'includes/auth.php';
+verificarSesion();
 require_once 'includes/functions.php';
 require_once 'includes/callcenter_functions.php';
 
@@ -71,7 +73,7 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                 <a href="crear.php" class="btn-nav btn-nav-primary">
                     <i class="fas fa-plus"></i> Nueva Historia
                 </a>
-                <a href="index.php" class="btn-nav btn-nav-secondary">
+                <a href="logout.php" class="btn-nav btn-nav-secondary">
                     <i class="fas fa-sign-out-alt"></i> Salir
                 </a>
             </nav>

@@ -4,6 +4,8 @@
  * Clínica Dental Premium Uchuya
  */
 require_once 'includes/config.php';
+require_once 'includes/auth.php';
+verificarSesion();
 require_once 'includes/functions.php';
 
 header('Content-Type: application/json');

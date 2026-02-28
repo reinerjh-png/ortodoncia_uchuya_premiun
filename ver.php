@@ -1,5 +1,7 @@
 <?php
 require_once 'includes/config.php';
+require_once 'includes/auth.php';
+verificarSesion();
 require_once 'includes/functions.php';
 
 // Verificar si se recibió un ID
@@ -50,14 +52,14 @@ if ($paciente['doctor_id']) {
         <div class="header-container">
             <a href="dashboard.php" class="header-logo">
                 <i class="fas fa-crown" style="color: var(--color-dorado); font-size: 1.8rem;"></i>
-                <span class="header-logo-text">Clínica Dental Uchuya Premium de Meilyng - Tingo María</span>
+                <span class="header-logo-text">Clínica Odontológica Uchuya Premium de Meilyng - Tingo María</span>
             </a>
             <nav class="header-nav">
                 <a href="editar.php?id=<?php echo $id; ?>" class="btn-nav btn-nav-primary">
                     <i class="fas fa-edit"></i> Editar
                 </a>
                 <a href="dashboard.php" class="btn-nav btn-nav-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                    <i class="fas fa-arrow-left"></i> Volver al Inicio
                 </a>
             </nav>
         </div>

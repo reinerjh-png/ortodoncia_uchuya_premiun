@@ -1,3 +1,30 @@
+<?php
+require_once 'includes/config.php';
+require_once 'includes/auth.php';
+
+// Si ya está autenticado, redirigir al dashboard
+if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] === true) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+// Procesar formulario de login
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $resultado = intentarLogin($password);
+    
+    if ($resultado['success']) {
+        header('Location: dashboard.php');
+        exit;
+    } else {
+        $error = $resultado['message'];
+    }
+}
+
+// Verificar si está bloqueado (para deshabilitar el formulario)
+$estaBloqueado = isset($_SESSION['login_bloqueado_hasta']) && ($_SESSION['login_bloqueado_hasta'] - time()) > 0;
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -110,11 +137,120 @@
         .quick-desc {
             color: var(--color-gris);
             font-size: 0.88rem;
-            margin-bottom: 32px;
+            margin-bottom: 16px;
             line-height: 1.6;
         }
 
-        /* ── Botón de ingreso rápido ── */
+        /* ── Formulario de contraseña ── */
+        .login-form {
+            margin-bottom: 8px;
+        }
+
+        .password-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 14px 50px 14px 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 12px;
+            color: var(--color-blanco);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .password-input::placeholder {
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        .password-input:focus {
+            border-color: var(--color-dorado);
+            box-shadow: 0 0 20px rgba(212,175,55,0.15);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(212,175,55,0.5);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: var(--color-dorado);
+        }
+
+        .password-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(212,175,55,0.4);
+            font-size: 1rem;
+        }
+
+        .password-input {
+            padding-left: 42px;
+        }
+
+        /* ── Mensaje de error ── */
+        .login-error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid rgba(220, 53, 69, 0.6);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            color: #ff4d5e;
+            font-size: 0.92rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: shakeError 0.5s ease;
+            text-align: left;
+        }
+
+        .login-error i {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .login-error.bloqueado {
+            background: rgba(255, 193, 7, 0.15);
+            border-color: rgba(255, 193, 7, 0.5);
+            color: #ffc107;
+        }
+
+        /* ── Input con error ── */
+        .password-input.input-error {
+            border-color: rgba(220, 53, 69, 0.7) !important;
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.2) !important;
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            15% { transform: translateX(-10px); }
+            30% { transform: translateX(10px); }
+            45% { transform: translateX(-7px); }
+            60% { transform: translateX(7px); }
+            75% { transform: translateX(-3px); }
+            90% { transform: translateX(3px); }
+        }
+
+        /* ── Botón de ingreso ── */
         .btn-quick-enter {
             display: inline-flex;
             align-items: center;
@@ -143,6 +279,12 @@
 
         .btn-quick-enter:active {
             transform: scale(0.98);
+        }
+
+        .btn-quick-enter:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* ── Ícono animado al hover ── */
@@ -244,15 +386,41 @@
 
             <p class="quick-desc">
                 Sistema de Gestión de Historias Clínicas.<br>
-                Acceso directo al panel de control.
+                Ingrese la contraseña para acceder al sistema.
             </p>
 
-            <!-- Botón de ingreso rápido (sin contraseña) -->
-            <a href="dashboard.php" class="btn-quick-enter" id="btn-entrar">
-                <i class="fas fa-hospital-user"></i>
-                <span>Ingresar al Sistema</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
+            <!-- Mensaje de error -->
+            <?php if (!empty($error)): ?>
+                <div style="background: rgba(220, 53, 69, 0.25); border: 1.5px solid #dc3545; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; color: #ff4d5e; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 10px; opacity: 1 !important; visibility: visible !important;">
+                    <i class="fas <?php echo $estaBloqueado ? 'fa-lock' : 'fa-exclamation-triangle'; ?>" style="font-size: 1.1rem; color: #ff4d5e; flex-shrink: 0;"></i>
+                    <span style="color: #ff4d5e; opacity: 1;"><?php echo htmlspecialchars($error); ?></span>
+                </div>
+            <?php endif; ?>
+
+            <!-- Formulario de login -->
+            <form method="POST" action="index.php" class="login-form" id="loginForm">
+                <div class="password-wrapper">
+                    <i class="fas fa-lock password-icon"></i>
+                    <input type="password" 
+                           name="password" 
+                           id="passwordInput"
+                           class="password-input <?php echo !empty($error) ? 'input-error' : ''; ?>" 
+                           placeholder="Contraseña del sistema"
+                           autocomplete="current-password"
+                           autofocus
+                           <?php echo $estaBloqueado ? 'disabled' : ''; ?>
+                           required>
+                    <button type="button" class="password-toggle" id="togglePassword" title="Mostrar/ocultar contraseña">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-quick-enter" id="btn-entrar" <?php echo $estaBloqueado ? 'disabled' : ''; ?>>
+                    <i class="fas fa-hospital-user"></i>
+                    <span>Ingresar al Sistema</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
 
             <p class="quick-slogan">
                 <i class="fas fa-tooth"></i>
@@ -266,5 +434,30 @@
             <span>Desarrollado por: Tec. Reiner Jimenez</span>
         </p>
     </div>
+
+    <script>
+        // Toggle password visibility
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('passwordInput');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                eyeIcon.classList.toggle('fa-eye', !isPassword);
+                eyeIcon.classList.toggle('fa-eye-slash', isPassword);
+            });
+        }
+
+        // Enter key to submit
+        if (passwordInput) {
+            passwordInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('loginForm').submit();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
