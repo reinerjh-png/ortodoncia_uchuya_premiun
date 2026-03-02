@@ -15,7 +15,7 @@
 // ┌──────────────────────────────────────────┐
 // │  CONTRASEÑA DEL SISTEMA (cambiar aquí)   │
 // └──────────────────────────────────────────┘
-define('AUTH_PASSWORD', 'MEILYNG123');
+define('AUTH_PASSWORD', 'ingresa la contraseña');
 
 // Configuración de intentos
 define('MAX_INTENTOS_LOGIN', 5);

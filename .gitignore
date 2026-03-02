@@ -1,0 +1,21 @@
+# Carpeta de archivos subidos (fotos de pacientes)
+#uploads/*
+#!uploads/.gitkeep
+
+# Archivos temporales y caché del sistema
+/tmp/
+*.log
+
+# Archivos específicos de entorno (IDEs)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos del sistema operativo
+Thumbs.db
+.DS_Store
+
+# Archivos de respaldo de editores
+*~
+*.bak
