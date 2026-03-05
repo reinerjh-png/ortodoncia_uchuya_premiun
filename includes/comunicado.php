@@ -8,7 +8,7 @@
  */
 
 // 1. ¿Mostrar el comunicado? (true / false)
-$comunicado_activo = true;
+$comunicado_activo = false;
 
 // 2. Título del mensaje (Aparece en negrita arriba)
 $comunicado_titulo = "Aviso del Sistema";

@@ -6,8 +6,8 @@
  * ═══════════════════════════════════════════════════════════════
  *  CÓMO CAMBIAR LA CONTRASEÑA EN EL FUTURO:
  * ═══════════════════════════════════════════════════════════════
- *  1. Busca la línea que dice: define('AUTH_PASSWORD', 'MEILYNG123');
- *  2. Cambia 'MEILYNG123' por tu nueva contraseña.
+ *  1. Busca la línea que dice: define('AUTH_PASSWORD', 'INGRESA TU CONTRASEÑA AQUI');
+ *  2. Cambia 'INGRESA TU CONTRASEÑA AQUI' por tu nueva contraseña.
  *  3. Guarda el archivo. ¡Eso es todo!
  * ═══════════════════════════════════════════════════════════════
  */
@@ -15,7 +15,7 @@
 // ┌──────────────────────────────────────────┐
 // │  CONTRASEÑA DEL SISTEMA (cambiar aquí)   │
 // └──────────────────────────────────────────┘
-define('AUTH_PASSWORD', 'ingresa la contraseña');
+define('AUTH_PASSWORD', 'INGRESA TU CONTRASEÑA AQUI');
 
 // Configuración de intentos
 define('MAX_INTENTOS_LOGIN', 5);

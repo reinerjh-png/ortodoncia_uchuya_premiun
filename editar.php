@@ -325,6 +325,20 @@ inputImagen.addEventListener('change', () => {
     inputImagen.value = '';
 });
 
+// Pegar imagen desde el portapapeles
+document.addEventListener('paste', (e) => {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            // Crear un nombre de archivo para el blob
+            const file = new File([blob], `cortesia_${new Date().getTime()}.png`, { type: blob.type });
+            subirImagen(file);
+        }
+    }
+});
+
 function subirArchivos(files) {
     for (let i = 0; i < files.length; i++) {
         subirImagen(files[i]);
