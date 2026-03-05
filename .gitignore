@@ -17,4 +17,10 @@ Thumbs.db
 *.bak
 
 # base de datos
-if0_41026781_clinica_uchuya.sql
+produccion_clinica_uchuya.sql
+
+# variables de entorno
+.env
+
+# archivos de respaldo
+clinica_dental_uchuya.zip

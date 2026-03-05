@@ -121,6 +121,45 @@ function intentarLogin($pdo, $usuario, $password) {
         // Registrar actividad de login
         registrarActividad($pdo, 'Login', 'Inicio de sesión exitoso');
         
+        // -------------------------------------------------------------
+        // Notificación por WhatsApp en segundo plano (vía Twilio)
+        // Solo para usuarios que NO son administradores
+        // -------------------------------------------------------------
+        if ($user['rol'] !== 'admin') {
+            try {
+                // CREDENCIALES DE TWILIO (Proporcionadas por el usuario)
+                $twilio_account_sid = getenv('TWILIO_ACCOUNT_SID');
+                $twilio_auth_token  = "984e01024f97ab3711e48d45025ba5db";
+                
+                // Números
+                $twilio_whatsapp_number = "whatsapp:+14155238886"; // Sandbox Twilio
+                $telefono_destino       = "whatsapp:+51977480721"; // El número del propietario
+                
+                $mensajeTexto = "🔔 *Inicio de sesión detectado*\nEl usuario *" . $user['nombre_completo'] . "* (" . $user['usuario'] . ") ha iniciado sesión en el sistema de la Clínica Dental Uchuya Sede Tingo María.";
+                
+                $urlTwilio = "https://api.twilio.com/2010-04-01/Accounts/" . $twilio_account_sid . "/Messages.json";
+                
+                $data = [
+                    'From' => $twilio_whatsapp_number,
+                    'To'   => $telefono_destino,
+                    'Body' => $mensajeTexto
+                ];
+                
+                $ch = curl_init($urlTwilio);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                curl_setopt($ch, CURLOPT_USERPWD, $twilio_account_sid . ":" . $twilio_auth_token);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 2); // Timeout muy corto (2 seg) para que no bloquee el login si el API demora
+                @curl_exec($ch);
+                @curl_close($ch);
+                
+            } catch (Exception $e) {
+                // Ignoramos el error para no colgar el sistema de inicio de sesión
+            }
+        }
+        //----------------------------------------------------------------------
+        
         return [
             'success' => true,
             'message' => 'Acceso concedido'

@@ -414,14 +414,22 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                                                 <button type="button" class="btn-accion btn-ver" 
                                                         style="background: #27ae60;"
                                                         title="Restaurar"
-                                                        onclick="confirmarAccion(<?php echo $paciente['id']; ?>, '<?php echo htmlspecialchars($paciente['nombres']); ?>', 'restaurar')">
+                                                        onclick="confirmarAccion(<?php echo $paciente['id']; ?>, '<?php echo htmlspecialchars(addslashes($paciente['nombres'])); ?>', 'restaurar')">
                                                     <i class="fas fa-trash-restore"></i>
                                                 </button>
+                                                <?php if (esAdmin()): ?>
+                                                    <button type="button" class="btn-accion btn-eliminar" 
+                                                            style="background: rgba(220, 53, 69, 0.2); color: #dc3545;"
+                                                            title="Eliminar permanentemente"
+                                                            onclick="confirmarAccion(<?php echo $paciente['id']; ?>, '<?php echo htmlspecialchars(addslashes($paciente['nombres'])); ?>', 'eliminar')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                <?php endif; ?>
                                             <?php else: ?>
                                                 <button type="button" class="btn-accion btn-eliminar" 
                                                         style="background: rgba(220, 53, 69, 0.2); color: #dc3545;"
                                                         title="Archivar"
-                                                        onclick="confirmarAccion(<?php echo $paciente['id']; ?>, '<?php echo htmlspecialchars($paciente['nombres']); ?>', 'archivar')">
+                                                        onclick="confirmarAccion(<?php echo $paciente['id']; ?>, '<?php echo htmlspecialchars(addslashes($paciente['nombres'])); ?>', 'archivar')">
                                                     <i class="fas fa-archive"></i>
                                                 </button>
                                             <?php endif; ?>
@@ -515,7 +523,7 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                 btn.style.backgroundColor = '#dc3545';
                 icon.innerHTML = '<i class="fas fa-archive"></i>';
                 icon.style.color = '#dc3545';
-            } else {
+            } else if (tipo === 'restaurar') {
                 titulo.innerText = '¿Restaurar Historia Clínica?';
                 texto.innerHTML = '¿Desea restaurar la historia clínica de <strong>' + nombre + '</strong> al listado activo?';
                 btn.href = 'restaurar.php?id=' + id;
@@ -523,6 +531,14 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                 btn.style.backgroundColor = '#27ae60';
                 icon.innerHTML = '<i class="fas fa-trash-restore"></i>';
                 icon.style.color = '#27ae60';
+            } else if (tipo === 'eliminar') {
+                titulo.innerText = '¿ELIMINAR Historia Clínica?';
+                texto.innerHTML = '<span style="color:#dc3545;font-weight:bold;">¡ADVERTENCIA!</span> Esta acción borrará todas las imágenes, tratamientos y datos de <strong>' + nombre + '</strong> permanentemente.';
+                btn.href = 'eliminar.php?id=' + id;
+                btn.className = 'btn';
+                btn.style.backgroundColor = '#dc3545';
+                icon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                icon.style.color = '#dc3545';
             }
             
             modal.classList.add('active');

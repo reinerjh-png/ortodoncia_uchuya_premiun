@@ -383,3 +383,45 @@ function eliminarImagenPaciente($pdo, $imagen_id) {
     
     return true;
 }
+
+/**
+ * Eliminar paciente permanentemente (Solo Admin)
+ * Borra paciente, tratamientos y todas sus imágenes físicas.
+ */
+function eliminarPaciente($pdo, $id) {
+    try {
+        $pdo->beginTransaction();
+        
+        // 1. Obtener imágenes del paciente para borrarlas del disco
+        $imagenes = obtenerImagenesPaciente($pdo, $id);
+        $directorio = 'uploads/pacientes/' . $id;
+        
+        // Borrar archivos físicos
+        foreach ($imagenes as $img) {
+            $ruta = $directorio . '/' . $img['nombre_archivo'];
+            if (file_exists($ruta)) {
+                unlink($ruta);
+            }
+        }
+        
+        // Intentar borrar el directorio del paciente si existe
+        if (is_dir($directorio)) {
+            @rmdir($directorio); 
+        }
+        
+        // 2. Borrar relaciones y datos de la BD (imágenes, tratamientos, paciente)
+        // (Asumiendo que no hay ON DELETE CASCADE configurado, lo borramos manualmente)
+        $pdo->prepare("DELETE FROM paciente_imagenes WHERE paciente_id = ?")->execute([$id]);
+        $pdo->prepare("DELETE FROM paciente_tratamientos WHERE paciente_id = ?")->execute([$id]);
+        
+        // 3. Borrar el paciente
+        $stmt = $pdo->prepare("DELETE FROM pacientes WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        $pdo->commit();
+        return true;
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
