@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (empty($errores)) {
             actualizarPaciente($pdo, $id, $datos, $tratamientosSeleccionados);
+            registrarActividad($pdo, 'Editar Paciente', 'Editó historia clínica: ' . $datos['numero_historia'] . ' - ' . $datos['nombres']);
             setMensaje('Historia clínica actualizada exitosamente', 'success');
             header('Location: dashboard.php');
             exit;

@@ -11,8 +11,9 @@ if (isset($_SESSION['autenticado']) && $_SESSION['autenticado'] === true) {
 // Procesar formulario de login
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
-    $resultado = intentarLogin($password);
+    $resultado = intentarLogin($pdo, $usuario, $password);
     
     if ($resultado['success']) {
         header('Location: dashboard.php');
@@ -386,7 +387,7 @@ $estaBloqueado = isset($_SESSION['login_bloqueado_hasta']) && ($_SESSION['login_
 
             <p class="quick-desc">
                 Sistema de Gestión de Historias Clínicas.<br>
-                Ingrese la contraseña para acceder al sistema.
+                Ingrese sus credenciales para acceder al sistema.
             </p>
 
             <!-- Mensaje de error -->
@@ -399,15 +400,27 @@ $estaBloqueado = isset($_SESSION['login_bloqueado_hasta']) && ($_SESSION['login_
 
             <!-- Formulario de login -->
             <form method="POST" action="index.php" class="login-form" id="loginForm">
+                <div class="password-wrapper" style="margin-bottom: 12px;">
+                    <i class="fas fa-user password-icon"></i>
+                    <input type="text" 
+                           name="usuario" 
+                           id="usuarioInput"
+                           class="password-input <?php echo !empty($error) ? 'input-error' : ''; ?>" 
+                           placeholder="Usuario"
+                           autocomplete="username"
+                           value="<?php echo isset($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : 'user'; ?>"
+                           autofocus
+                           <?php echo $estaBloqueado ? 'disabled' : ''; ?>
+                           required>
+                </div>
                 <div class="password-wrapper">
                     <i class="fas fa-lock password-icon"></i>
                     <input type="password" 
                            name="password" 
                            id="passwordInput"
                            class="password-input <?php echo !empty($error) ? 'input-error' : ''; ?>" 
-                           placeholder="Contraseña del sistema"
+                           placeholder="Contraseña"
                            autocomplete="current-password"
-                           autofocus
                            <?php echo $estaBloqueado ? 'disabled' : ''; ?>
                            required>
                     <button type="button" class="password-toggle" id="togglePassword" title="Mostrar/ocultar contraseña">

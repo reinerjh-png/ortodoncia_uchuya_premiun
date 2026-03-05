@@ -1,21 +1,12 @@
 <?php
 /**
- * Sistema de Autenticación
+ * Sistema de Autenticación con Roles
  * Clínica Dental Premium Uchuya
  * 
- * ═══════════════════════════════════════════════════════════════
- *  CÓMO CAMBIAR LA CONTRASEÑA EN EL FUTURO:
- * ═══════════════════════════════════════════════════════════════
- *  1. Busca la línea que dice: define('AUTH_PASSWORD', 'INGRESA TU CONTRASEÑA AQUI');
- *  2. Cambia 'INGRESA TU CONTRASEÑA AQUI' por tu nueva contraseña.
- *  3. Guarda el archivo. ¡Eso es todo!
- * ═══════════════════════════════════════════════════════════════
+ * Roles:
+ *  - admin: Acceso completo (eliminar pacientes, gestión doctores/usuarios, ver actividad)
+ *  - recepcionista: Acceso estándar (crear/editar/archivar pacientes, call center)
  */
-
-// ┌──────────────────────────────────────────┐
-// │  CONTRASEÑA DEL SISTEMA (cambiar aquí)   │
-// └──────────────────────────────────────────┘
-define('AUTH_PASSWORD', 'INGRESA TU CONTRASEÑA AQUI');
 
 // Configuración de intentos
 define('MAX_INTENTOS_LOGIN', 5);
@@ -24,11 +15,9 @@ define('BLOQUEO_MINUTOS', 15);
 /**
  * Verifica si el usuario tiene una sesión activa.
  * Si no la tiene, redirige al login.
- * Debe llamarse al inicio de cada página protegida.
  */
 function verificarSesion() {
     if (!isset($_SESSION['autenticado']) || $_SESSION['autenticado'] !== true) {
-        // Determinar la ruta al index.php según la ubicación del archivo actual
         $scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
         $authDir = str_replace('\\', '/', dirname(__DIR__));
         
@@ -46,13 +35,43 @@ function verificarSesion() {
 }
 
 /**
- * Intenta autenticar al usuario con la contraseña proporcionada.
- * Implementa protección contra fuerza bruta.
+ * Verifica si el usuario actual es administrador.
+ */
+function esAdmin() {
+    return isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] === 'admin';
+}
+
+/**
+ * Requiere que el usuario sea admin. Si no lo es, redirige al dashboard.
+ */
+function requiereAdmin() {
+    if (!esAdmin()) {
+        $scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
+        $authDir = str_replace('\\', '/', dirname(__DIR__));
+        
+        if (strpos($scriptPath, $authDir) === 0) {
+            $relPath = substr(dirname($scriptPath), strlen($authDir) + 1);
+            $depth = $relPath ? substr_count($relPath, '/') + 1 : 0;
+            $prefix = str_repeat('../', $depth);
+        } else {
+            $prefix = '';
+        }
+        
+        header('Location: ' . $prefix . 'dashboard.php');
+        exit;
+    }
+}
+
+/**
+ * Intenta autenticar al usuario con usuario y contraseña.
+ * Valida contra la tabla `usuarios` en la base de datos.
  * 
- * @param string $password La contraseña ingresada
+ * @param PDO $pdo Conexión a la BD
+ * @param string $usuario Nombre de usuario
+ * @param string $password Contraseña en texto plano
  * @return array ['success' => bool, 'message' => string]
  */
-function intentarLogin($password) {
+function intentarLogin($pdo, $usuario, $password) {
     // Verificar si está bloqueado por intentos fallidos
     if (isset($_SESSION['login_bloqueado_hasta'])) {
         $tiempoRestante = $_SESSION['login_bloqueado_hasta'] - time();
@@ -64,7 +83,6 @@ function intentarLogin($password) {
                 'bloqueado' => true
             ];
         } else {
-            // El bloqueo expiró, limpiar
             unset($_SESSION['login_bloqueado_hasta']);
             unset($_SESSION['login_intentos']);
         }
@@ -75,26 +93,45 @@ function intentarLogin($password) {
         $_SESSION['login_intentos'] = 0;
     }
 
-    // Verificar contraseña
-    if ($password === AUTH_PASSWORD) {
-        // Contraseña correcta — limpiar intentos y autenticar
+    // Buscar usuario en la base de datos
+    $stmt = $pdo->prepare("SELECT id, usuario, password_hash, nombre_completo, rol, estado FROM usuarios WHERE usuario = ?");
+    $stmt->execute([$usuario]);
+    $user = $stmt->fetch();
+
+    // Verificar credenciales
+    if ($user && $user['password_hash'] === hash('sha256', $password)) {
+        // Verificar si el usuario está activo
+        if ($user['estado'] == 0) {
+            return [
+                'success' => false,
+                'message' => 'Su cuenta ha sido desactivada. Contacte al administrador.'
+            ];
+        }
+
+        // Login exitoso — guardar datos en sesión
         $_SESSION['autenticado'] = true;
+        $_SESSION['usuario_id'] = $user['id'];
+        $_SESSION['usuario_nombre'] = $user['nombre_completo'];
+        $_SESSION['usuario_usuario'] = $user['usuario'];
+        $_SESSION['usuario_rol'] = $user['rol'];
         $_SESSION['login_tiempo'] = time();
         unset($_SESSION['login_intentos']);
         unset($_SESSION['login_bloqueado_hasta']);
+
+        // Registrar actividad de login
+        registrarActividad($pdo, 'Login', 'Inicio de sesión exitoso');
         
         return [
             'success' => true,
             'message' => 'Acceso concedido'
         ];
     } else {
-        // Contraseña incorrecta — incrementar intentos
+        // Credenciales incorrectas — incrementar intentos
         $_SESSION['login_intentos']++;
         
         $intentosRestantes = MAX_INTENTOS_LOGIN - $_SESSION['login_intentos'];
         
         if ($_SESSION['login_intentos'] >= MAX_INTENTOS_LOGIN) {
-            // Bloquear cuenta
             $_SESSION['login_bloqueado_hasta'] = time() + (BLOQUEO_MINUTOS * 60);
             $_SESSION['login_intentos'] = 0;
             
@@ -107,8 +144,29 @@ function intentarLogin($password) {
         
         return [
             'success' => false,
-            'message' => "Contraseña incorrecta. Le quedan {$intentosRestantes} intento(s)."
+            'message' => "Usuario o contraseña incorrectos. Le quedan {$intentosRestantes} intento(s)."
         ];
+    }
+}
+
+/**
+ * Registra una actividad en el log.
+ * 
+ * @param PDO $pdo Conexión a la BD
+ * @param string $accion Tipo de acción (Login, Crear Paciente, etc.)
+ * @param string $detalle Detalle de la acción
+ */
+function registrarActividad($pdo, $accion, $detalle = '') {
+    $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
+    if (!$usuario_id) return;
+    
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
+    
+    try {
+        $stmt = $pdo->prepare("INSERT INTO actividad_log (usuario_id, accion, detalle, ip_address) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$usuario_id, $accion, $detalle, $ip]);
+    } catch (Exception $e) {
+        // Silenciar errores del log para no afectar la operación principal
     }
 }
 

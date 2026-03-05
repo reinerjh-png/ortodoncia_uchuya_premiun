@@ -25,6 +25,7 @@ if (!$paciente) {
 // Restaurar paciente
 try {
     if (restaurarPaciente($pdo, $id)) {
+        registrarActividad($pdo, 'Restaurar Paciente', 'Restauró al paciente: ' . $paciente['nombres'] . ' (HC: ' . $paciente['numero_historia'] . ')');
         setMensaje('Historia clínica restaurada exitosamente', 'success');
     } else {
         setMensaje('Error al restaurar la historia clínica', 'error');

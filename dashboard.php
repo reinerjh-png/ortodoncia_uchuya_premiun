@@ -78,9 +78,21 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                 <span class="header-logo-text">Clínica Odontológica Uchuya Premium de Meilyng - Tingo María</span>
             </a>
             <nav class="header-nav">
+                <span style="color: var(--color-gris); font-size: 0.85rem; margin-right: 8px;">
+                    <i class="fas fa-user-circle" style="color: var(--color-dorado);"></i>
+                    <?php echo htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Usuario'); ?>
+                    <?php if (esAdmin()): ?>
+                        <span style="background: rgba(212,175,55,0.2); color: var(--color-dorado); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 4px;">ADMIN</span>
+                    <?php endif; ?>
+                </span>
                 <a href="crear.php" class="btn-nav btn-nav-primary">
                     <i class="fas fa-plus"></i> Nueva Historia
                 </a>
+                <?php if (esAdmin()): ?>
+                    <a href="admin/index.php" class="btn-nav btn-nav-secondary" style="background: rgba(212,175,55,0.15); color: var(--color-dorado); border-color: rgba(212,175,55,0.4);">
+                        <i class="fas fa-cog"></i> Admin
+                    </a>
+                <?php endif; ?>
                 <a href="logout.php" class="btn-nav btn-nav-secondary">
                     <i class="fas fa-sign-out-alt"></i> Salir
                 </a>

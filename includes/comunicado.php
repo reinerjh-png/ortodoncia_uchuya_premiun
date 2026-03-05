@@ -14,7 +14,7 @@ $comunicado_activo = false;
 $comunicado_titulo = "Aviso del Sistema";
 
 // 3. Contenido del mensaje
-$comunicado_mensaje = "La historia 78880 es inválido";
+$comunicado_mensaje = "Bienvenido al sistema de Clínica Dental Uchuya Premium de Mailyng, recuerda llamar a los pacientes del call center";
 
 // 4. Tipo de alerta (opcional, para el icono): 'info', 'warning', 'success'
 $comunicado_tipo = "info";

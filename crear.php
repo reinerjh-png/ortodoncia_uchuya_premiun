@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (empty($errores)) {
             crearPaciente($pdo, $datos, $tratamientosSeleccionados);
+            registrarActividad($pdo, 'Crear Paciente', 'Creó historia clínica: ' . $datos['numero_historia'] . ' - ' . $datos['nombres']);
             setMensaje('Historia clínica ' . htmlspecialchars($datos['numero_historia']) . ' creada exitosamente', 'success');
             
             // Redirigir según la acción seleccionada

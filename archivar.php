@@ -25,6 +25,7 @@ if (!$paciente) {
 // Archivar paciente
 try {
     if (archivarPaciente($pdo, $id)) {
+        registrarActividad($pdo, 'Archivar Paciente', 'Archivó al paciente: ' . $paciente['nombres'] . ' (HC: ' . $paciente['numero_historia'] . ')');
         setMensaje('Historia clínica archivada exitosamente', 'success');
     } else {
         setMensaje('Error al archivar la historia clínica', 'error');
