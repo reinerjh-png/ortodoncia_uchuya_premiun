@@ -134,9 +134,39 @@ $usuarios = $pdo->query("SELECT u.*,
         .modal-admin-overlay.active { display: flex; }
         .modal-admin { background: #1a1a1a; border: 2px solid var(--color-dorado); border-radius: 12px; padding: 30px; width: 90%; max-width: 400px; text-align: center; }
         .modal-admin h3 { color: var(--color-dorado); margin-bottom: 20px; font-family: var(--font-titulo); }
-        .modal-admin input { width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #fff; font-size: 0.95rem; margin-bottom: 15px; box-sizing: border-box; }
-        .modal-admin input:focus { outline: none; border-color: var(--color-dorado); }
+        .modal-admin input, .modal-admin select { width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #fff; font-size: 0.95rem; margin-bottom: 15px; box-sizing: border-box; }
+        .modal-admin input:focus, .modal-admin select:focus { outline: none; border-color: var(--color-dorado); }
         .modal-admin-buttons { display: flex; gap: 10px; justify-content: center; }
+        
+        /* Estilos para el campo de contraseña con ojito */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-container input {
+            padding-right: 40px !important; /* Espacio para el icono */
+            margin-bottom: 0 !important; /* Eliminar el margen inferior si está dentro de un contenedor alineado */
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            color: var(--color-gris);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .toggle-password:hover {
+            color: var(--color-dorado);
+        }
+        .toggle-password:focus {
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -174,8 +204,13 @@ $usuarios = $pdo->query("SELECT u.*,
                 </div>
                 <div style="flex: 1; min-width: 180px;">
                     <label style="display: block; color: var(--color-dorado); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Contraseña *</label>
-                    <input type="password" name="password" placeholder="Mín. 4 caracteres" required minlength="4"
-                           style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #fff; font-size: 0.95rem; box-sizing: border-box;">
+                    <div class="password-container">
+                        <input type="password" name="password" id="inputPasswordNueva" placeholder="Mín. 4 caracteres" required minlength="4"
+                               style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; color: #fff; font-size: 0.95rem; box-sizing: border-box;">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('inputPasswordNueva', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <div style="min-width: 160px;">
                     <label style="display: block; color: var(--color-dorado); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Rol</label>
@@ -278,7 +313,12 @@ $usuarios = $pdo->query("SELECT u.*,
                 <div style="text-align: left; margin-bottom: 5px; margin-top: 10px;">
                     <label style="color: var(--color-dorado); font-size: 0.8rem; text-transform: uppercase;">Nueva Contraseña</label>
                 </div>
-                <input type="password" name="new_password" placeholder="Dejar en blanco para no cambiar">
+                <div class="password-container" style="margin-bottom: 15px;">
+                    <input type="password" name="new_password" id="inputPasswordEditar" placeholder="Dejar en blanco para no cambiar">
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('inputPasswordEditar', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
                 
                 <div class="modal-admin-buttons" style="margin-top: 20px;">
                     <button type="button" onclick="cerrarModalEditar()" style="padding: 10px 25px; background: var(--color-gris-oscuro); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancelar</button>
@@ -297,6 +337,16 @@ $usuarios = $pdo->query("SELECT u.*,
             document.getElementById('modalEditarId').value = id;
             document.getElementById('modalEditarUser').textContent = usuario;
             document.getElementById('modalEditarNombre').value = nombre;
+            
+            // Si el ojito estaba en texto abierto, regresarlo a password al abrir un nuevo modal
+            let passwordInput = document.getElementById('inputPasswordEditar');
+            let iconBtn = passwordInput.nextElementSibling;
+            if (passwordInput.type === 'text') {
+                passwordInput.type = 'password';
+                iconBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+            passwordInput.value = ''; // Limpiar campo
+            
             document.getElementById('modalEditar').classList.add('active');
         }
         function cerrarModalEditar() {
@@ -305,6 +355,21 @@ $usuarios = $pdo->query("SELECT u.*,
         document.getElementById('modalEditar').addEventListener('click', function(e) {
             if (e.target === this) cerrarModalEditar();
         });
+        
+        function togglePasswordVisibility(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            const icon = btnElement.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 </html>

@@ -19,8 +19,5 @@ Thumbs.db
 # base de datos
 produccion_clinica_uchuya.sql
 
-# variables de entorno
-.env
-
-# archivos de respaldo
+# Archivo zip
 clinica_dental_uchuya.zip
