@@ -142,7 +142,7 @@ function intentarLogin($pdo, $usuario, $password) {
                 $twilio_whatsapp_number = "whatsapp:+14155238886"; // Sandbox Twilio
                 $telefono_destino       = "whatsapp:+51977480721"; // El número del propietario
                 
-                $mensajeTexto = "🔔 *Inicio de sesión detectado*\nEl usuario *" . $user['nombre_completo'] . "* (" . $user['usuario'] . ") ha iniciado sesión en el sistema de la Clínica Dental Uchuya Sede Tingo María.";
+                $mensajeTexto = "🔔 *Inicio de sesión detectado*\nEl usuario *" . $user['nombre_completo'] . "* (" . $user['usuario'] . ") ha iniciado sesión en el sistema de la Clínica Dental Uchuya Sede *Tingo María*.";
                 
                 $urlTwilio = "https://api.twilio.com/2010-04-01/Accounts/" . $twilio_account_sid . "/Messages.json";
                 

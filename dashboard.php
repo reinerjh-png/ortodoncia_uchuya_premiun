@@ -75,16 +75,22 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
         <div class="header-container">
             <a href="dashboard.php" class="header-logo">
                 <i class="fas fa-crown" style="color: var(--color-dorado); font-size: 1.8rem;"></i>
-                <span class="header-logo-text">Clínica Odontológica Uchuya Premium de Meilyng - Tingo María</span>
+                <span class="header-logo-text">Ortodoncia Uchuya Premium - Meilyng "Tingo María"</span>
             </a>
             <nav class="header-nav">
-                <span style="color: var(--color-gris); font-size: 0.85rem; margin-right: 8px;">
-                    <i class="fas fa-user-circle" style="color: var(--color-dorado);"></i>
-                    <?php echo htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Usuario'); ?>
-                    <?php if (esAdmin()): ?>
-                        <span style="background: rgba(212,175,55,0.2); color: var(--color-dorado); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 4px;">ADMIN</span>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 8px;">
+                    <span style="color: var(--color-gris); font-size: 0.85rem;">
+                        <i class="fas fa-user-circle" style="color: var(--color-dorado);"></i>
+                        <?php echo htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Usuario'); ?>
+                    </span>
+                    <?php if (isset($_SESSION['usuario_rol'])): ?>
+                        <?php if ($_SESSION['usuario_rol'] === 'admin'): ?>
+                            <span style="background: rgba(212,175,55,0.2); color: var(--color-dorado); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-top: 4px;">ADMIN</span>
+                        <?php else: ?>
+                            <span style="background: rgba(40,167,69,0.15); color: #28a745; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-top: 4px;">RECEPCIÓN</span>
+                        <?php endif; ?>
                     <?php endif; ?>
-                </span>
+                </div>
                 <a href="crear.php" class="btn-nav btn-nav-primary">
                     <i class="fas fa-plus"></i> Nueva Historia
                 </a>
