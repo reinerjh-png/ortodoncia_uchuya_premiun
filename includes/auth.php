@@ -127,11 +127,18 @@ function intentarLogin($pdo, $usuario, $password) {
         // -------------------------------------------------------------
         if ($user['rol'] !== 'admin') {
             try {
-                // CREDENCIALES DE TWILIO (Proporcionadas por el usuario)
-                $twilio_account_sid = getenv('TWILIO_ACCOUNT_SID');
-                $twilio_auth_token  = "984e01024f97ab3711e48d45025ba5db";
+                // CREDENCIALES DE TWILIO (Variables de Entorno)
+                $envFile = __DIR__ . '/../.env';
+                $env = file_exists($envFile) ? parse_ini_file($envFile) : [];
                 
-                // Números
+                $twilio_account_sid = isset($env['TWILIO_ACCOUNT_SID']) ? $env['TWILIO_ACCOUNT_SID'] : getenv('TWILIO_ACCOUNT_SID');
+                $twilio_auth_token  = isset($env['TWILIO_AUTH_TOKEN']) ? $env['TWILIO_AUTH_TOKEN'] : getenv('TWILIO_AUTH_TOKEN');
+                
+                // Si no hay credenciales, saltar la notificación
+                if (!$twilio_account_sid || !$twilio_auth_token) {
+                    throw new Exception("Credenciales de Twilio no configuradas.");
+                }
+
                 $twilio_whatsapp_number = "whatsapp:+14155238886"; // Sandbox Twilio
                 $telefono_destino       = "whatsapp:+51977480721"; // El número del propietario
                 

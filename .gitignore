@@ -21,3 +21,7 @@ produccion_clinica_uchuya.sql
 
 # Archivo zip
 clinica_dental_uchuya.zip
+
+# Variables de entorno
+.env
+*.env
