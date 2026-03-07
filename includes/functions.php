@@ -139,7 +139,12 @@ function obtenerPacientes($pdo, $busqueda = '', $tipoBusqueda = '', $estado = 1,
         }
     }
 
-    $sql .= " GROUP BY p.id ORDER BY CAST(p.numero_historia AS UNSIGNED) DESC";
+    $sql .= " GROUP BY p.id";
+    if ($soloCitas) {
+        $sql .= " ORDER BY p.fecha_ultima_cita ASC";
+    } else {
+        $sql .= " ORDER BY CAST(p.numero_historia AS UNSIGNED) DESC";
+    }
     $sql .= " LIMIT :limite OFFSET :offset";
     $params[':limite']  = $limite;
     $params[':offset']  = $offset;
