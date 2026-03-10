@@ -408,7 +408,7 @@ $estaBloqueado = isset($_SESSION['login_bloqueado_hasta']) && ($_SESSION['login_
                            class="password-input <?php echo !empty($error) ? 'input-error' : ''; ?>" 
                            placeholder="Usuario"
                            autocomplete="username"
-                           value="<?php echo isset($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : 'user'; ?>"
+                           value="<?php echo isset($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : ''; ?>"
                            autofocus
                            <?php echo $estaBloqueado ? 'disabled' : ''; ?>
                            required>
