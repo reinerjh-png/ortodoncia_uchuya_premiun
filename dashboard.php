@@ -349,7 +349,8 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                             <th>Paciente</th>
                             <th>Celular</th>
                             <th>Doctor</th>
-                            <th>Próxima Cita</th>
+                            <th>Fecha Cita</th>
+                            <?php if ($verCitas): ?><th>Hora Cita</th><?php endif; ?>
                             <th>Tratamientos</th>
                             <th>Acciones</th>
                         </tr>
@@ -357,7 +358,7 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                     <tbody>
                         <?php if (empty($pacientes)): ?>
                             <tr>
-                                <td colspan="9" class="table-empty">
+                                <td colspan="<?php echo $verCitas ? 10 : 9; ?>" class="table-empty">
                                     <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
                                     No se encontraron historias clínicas
                                     <?php if ($busqueda): ?>
@@ -394,6 +395,15 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
                                             <span class="text-gray">-</span>
                                         <?php endif; ?>
                                     </td>
+                                    <?php if ($verCitas): ?>
+                                    <td>
+                                        <?php if (!empty($paciente['hora_cita'])): ?>
+                                            <?php echo date('g:i A', strtotime($paciente['hora_cita'])); ?>
+                                        <?php else: ?>
+                                            <span class="text-gray">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <?php endif; ?>
                                     <td>
                                         <?php if (!empty($tratamientosPaciente)): ?>
                                             <?php foreach (array_slice($tratamientosPaciente, 0, 2) as $trat): ?>

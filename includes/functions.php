@@ -213,8 +213,8 @@ function crearPaciente($pdo, $datos, $tratamientos = []) {
     try {
         $pdo->beginTransaction();
         
-        $sql = "INSERT INTO pacientes (numero_historia, dni, nombres, genero, celular, edad, direccion, fecha_registro, doctor_id, fecha_ultima_cita, observaciones) 
-                VALUES (:numero_historia, :dni, :nombres, :genero, :celular, :edad, :direccion, :fecha_registro, :doctor_id, :fecha_ultima_cita, :observaciones)";
+        $sql = "INSERT INTO pacientes (numero_historia, dni, nombres, genero, celular, edad, direccion, fecha_registro, doctor_id, fecha_ultima_cita, hora_cita, observaciones) 
+                VALUES (:numero_historia, :dni, :nombres, :genero, :celular, :edad, :direccion, :fecha_registro, :doctor_id, :fecha_ultima_cita, :hora_cita, :observaciones)";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -228,6 +228,7 @@ function crearPaciente($pdo, $datos, $tratamientos = []) {
             ':fecha_registro' => $datos['fecha_registro'],
             ':doctor_id' => $datos['doctor_id'] ?: null,
             ':fecha_ultima_cita' => $datos['fecha_ultima_cita'] ?: null,
+            ':hora_cita' => $datos['hora_cita'] ?: null,
             ':observaciones' => $datos['observaciones']
         ]);
         
@@ -268,6 +269,7 @@ function actualizarPaciente($pdo, $id, $datos, $tratamientos = []) {
                 fecha_registro = :fecha_registro,
                 doctor_id = :doctor_id,
                 fecha_ultima_cita = :fecha_ultima_cita,
+                hora_cita = :hora_cita,
                 observaciones = :observaciones
                 WHERE id = :id";
         
@@ -283,6 +285,7 @@ function actualizarPaciente($pdo, $id, $datos, $tratamientos = []) {
             ':fecha_registro' => $datos['fecha_registro'],
             ':doctor_id' => $datos['doctor_id'] ?: null,
             ':fecha_ultima_cita' => $datos['fecha_ultima_cita'] ?: null,
+            ':hora_cita' => $datos['hora_cita'] ?: null,
             ':observaciones' => $datos['observaciones'],
             ':id' => $id
         ]);

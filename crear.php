@@ -8,6 +8,10 @@ require_once 'includes/functions.php';
 $doctores = obtenerDoctores($pdo);
 $tratamientos = obtenerTratamientos($pdo);
 
+// Obtener siguiente número de historia
+$stmtMax = $pdo->query("SELECT MAX(CAST(numero_historia AS UNSIGNED)) FROM pacientes");
+$siguienteNumero = intval($stmtMax->fetchColumn()) + 1;
+
 // Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -22,8 +26,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'fecha_registro' => $_POST['fecha_registro'] ?: null,
             'doctor_id' => $_POST['doctor_id'] ?: null,
             'fecha_ultima_cita' => $_POST['fecha_ultima_cita'] ?: null,
+            'hora_cita' => null,
             'observaciones' => sanitizar($_POST['observaciones'])
         ];
+        
+        // Convertir hora 12h a formato 24h TIME
+        if (!empty($_POST['hora_cita_hora']) && !empty($_POST['hora_cita_ampm'])) {
+            $h = intval($_POST['hora_cita_hora']);
+            $m = isset($_POST['hora_cita_min']) ? str_pad(intval($_POST['hora_cita_min']), 2, '0', STR_PAD_LEFT) : '00';
+            $ampm = $_POST['hora_cita_ampm'];
+            if ($ampm === 'PM' && $h < 12) $h += 12;
+            if ($ampm === 'AM' && $h == 12) $h = 0;
+            $datos['hora_cita'] = str_pad($h, 2, '0', STR_PAD_LEFT) . ':' . $m . ':00';
+        }
         
         $tratamientosSeleccionados = $_POST['tratamientos'] ?? [];
         
@@ -110,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="numero_historia" class="form-control" 
                                placeholder="Solo números" required
                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                               value="<?php echo isset($_POST['numero_historia']) ? htmlspecialchars($_POST['numero_historia']) : ''; ?>">
+                               value="<?php echo isset($_POST['numero_historia']) ? htmlspecialchars($_POST['numero_historia']) : $siguienteNumero; ?>">
                     </div>
                     
                     <!-- DNI -->
@@ -193,9 +208,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <!-- Fecha de proxima cita -->
                     <div class="form-group">
-                        <label class="form-label">Fecha de Próxima Cita</label>
+                        <label class="form-label">Agendar Cita</label>
                         <input type="date" name="fecha_ultima_cita" class="form-control"
                                value="<?php echo isset($_POST['fecha_ultima_cita']) ? $_POST['fecha_ultima_cita'] : ''; ?>">
+                    </div>
+                    
+                    <!-- Hora de cita -->
+                    <div class="form-group">
+                        <label class="form-label">Hora de Cita</label>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <select name="hora_cita_hora" class="form-control" style="flex: 1; min-width: 0;">
+                                <option value="">Hora</option>
+                                <?php for ($h = 1; $h <= 12; $h++): ?>
+                                    <option value="<?php echo $h; ?>" <?php echo (isset($_POST['hora_cita_hora']) && $_POST['hora_cita_hora'] == $h) ? 'selected' : ''; ?>><?php echo $h; ?></option>
+                                <?php endfor; ?>
+                            </select>
+                            <span style="color: var(--color-gris); font-weight: 700;">:</span>
+                            <select name="hora_cita_min" class="form-control" style="flex: 1; min-width: 0;">
+                                <?php foreach (['00','15','30','45'] as $min): ?>
+                                    <option value="<?php echo $min; ?>" <?php echo (isset($_POST['hora_cita_min']) && $_POST['hora_cita_min'] == $min) ? 'selected' : ''; ?>><?php echo $min; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <select name="hora_cita_ampm" class="form-control" style="flex: 1; min-width: 0;">
+                                <option value="">--</option>
+                                <option value="AM" <?php echo (isset($_POST['hora_cita_ampm']) && $_POST['hora_cita_ampm'] === 'AM') ? 'selected' : ''; ?>>AM</option>
+                                <option value="PM" <?php echo (isset($_POST['hora_cita_ampm']) && $_POST['hora_cita_ampm'] === 'PM') ? 'selected' : ''; ?>>PM</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <!-- Tratamientos -->

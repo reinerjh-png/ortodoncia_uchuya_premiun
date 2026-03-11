@@ -136,6 +136,12 @@ if ($paciente['doctor_id']) {
                                 <?php echo $paciente['fecha_ultima_cita'] ? date('d/m/Y', strtotime($paciente['fecha_ultima_cita'])) : '-'; ?>
                             </span>
                         </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Hora de Cita</span>
+                            <span class="detalle-valor">
+                                <?php echo !empty($paciente['hora_cita']) ? date('g:i A', strtotime($paciente['hora_cita'])) : '-'; ?>
+                            </span>
+                        </div>
                         <div class="detalle-item full-width">
                             <span class="detalle-label">Doctor Asignado</span>
                             <span class="detalle-valor">
