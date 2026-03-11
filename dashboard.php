@@ -6,11 +6,8 @@ require_once 'includes/functions.php';
 require_once 'includes/callcenter_functions.php';
 require_once 'includes/comunicado.php';
 
-// Lógica para mostrar comunicado una sola vez por sesión
-$mostrarComunicado = $comunicado_activo && !isset($_SESSION['comunicado_visto']);
-if ($mostrarComunicado) {
-    $_SESSION['comunicado_visto'] = true;
-}
+// comunicado.php ya maneja la lógica de sesión internamente
+$mostrarComunicado = $comunicado_activo;
 
 
 // Parámetros de búsqueda y filtro
