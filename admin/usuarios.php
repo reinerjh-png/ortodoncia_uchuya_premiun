@@ -128,7 +128,7 @@ $usuarios = $pdo->query("SELECT u.*,
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios - Panel Admin</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/fontawesome/css/all.min.css">
     <style>
         .modal-admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; }
         .modal-admin-overlay.active { display: flex; }

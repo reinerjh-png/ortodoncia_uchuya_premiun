@@ -33,8 +33,8 @@ if ($_SESSION['comunicado_bienvenida'] && $_SESSION['comunicado_callcenter'] && 
     return;
 }
 
-// ── 1. Bienvenida (primera visita del día) ───────────────────
-if (!$_SESSION['comunicado_bienvenida']) {
+// ── 1. Bienvenida y Citas de Hoy (a partir de las 9:00 AM) ───
+if ($horaActual >= 9 && $horaActual < 11 && !$_SESSION['comunicado_bienvenida']) {
     // Contar citas agendadas para hoy
     $stmtHoy = $pdo->query(
         "SELECT COUNT(*) FROM pacientes 

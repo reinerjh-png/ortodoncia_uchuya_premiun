@@ -107,8 +107,11 @@ function asignarLlamadasDiarias($pdo) {
  */
 function obtenerLlamadasDelDia($pdo) {
     try {
-        // Asegurar que hay asignaciones para hoy
-        asignarLlamadasDiarias($pdo);
+        // Solo asignar llamadas una vez por sesión/día
+        if (!isset($_SESSION['cc_asignado_hoy']) || $_SESSION['cc_asignado_hoy'] !== date('Y-m-d')) {
+            asignarLlamadasDiarias($pdo);
+            $_SESSION['cc_asignado_hoy'] = date('Y-m-d');
+        }
         
         $stmt = $pdo->query("
             SELECT 
@@ -140,8 +143,11 @@ function obtenerLlamadasDelDia($pdo) {
  */
 function obtenerContadorCallCenter($pdo) {
     try {
-        // Asegurar que hay asignaciones para hoy
-        asignarLlamadasDiarias($pdo);
+        // Solo asignar llamadas una vez por sesión/día
+        if (!isset($_SESSION['cc_asignado_hoy']) || $_SESSION['cc_asignado_hoy'] !== date('Y-m-d')) {
+            asignarLlamadasDiarias($pdo);
+            $_SESSION['cc_asignado_hoy'] = date('Y-m-d');
+        }
         
         $stmt = $pdo->query("
             SELECT COUNT(*) 
