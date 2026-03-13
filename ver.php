@@ -131,7 +131,7 @@ if ($paciente['doctor_id']) {
                             </span>
                         </div>
                         <div class="detalle-item">
-                            <span class="detalle-label">Próxima Cita</span>
+                            <span class="detalle-label">Última Cita</span>
                             <span class="detalle-valor">
                                 <?php echo $paciente['fecha_ultima_cita'] ? date('d/m/Y', strtotime($paciente['fecha_ultima_cita'])) : '-'; ?>
                             </span>
@@ -200,7 +200,7 @@ if ($paciente['doctor_id']) {
                     <div class="galeria-grid">
                         <?php foreach ($imagenesPaciente as $index => $img): ?>
                             <div class="galeria-item" onclick="abrirLightbox(<?php echo $index; ?>)">
-                                <img src="uploads/pacientes/<?php echo $id; ?>/<?php echo htmlspecialchars($img['nombre_archivo']); ?>" 
+                                <img src="uploads/pacientes/<?php echo htmlspecialchars($paciente['numero_historia']); ?>/<?php echo htmlspecialchars($img['nombre_archivo']); ?>" 
                                      alt="<?php echo htmlspecialchars($img['nombre_original']); ?>">
                                 <div class="galeria-item-overlay">
                                     <i class="fas fa-search-plus"></i>
@@ -262,7 +262,7 @@ if ($paciente['doctor_id']) {
 const imagenes = [
     <?php foreach ($imagenesPaciente as $img): ?>
     {
-        url: "uploads/pacientes/<?php echo $id; ?>/<?php echo htmlspecialchars($img['nombre_archivo']); ?>",
+        url: "uploads/pacientes/<?php echo htmlspecialchars($paciente['numero_historia']); ?>/<?php echo htmlspecialchars($img['nombre_archivo']); ?>",
         nombre: "<?php echo htmlspecialchars($img['nombre_original']); ?>"
     },
     <?php endforeach; ?>

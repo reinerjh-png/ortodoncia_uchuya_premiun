@@ -72,7 +72,7 @@ function urlPagina($pagina, $busqueda, $tipoBusqueda, $verCitas, $verArchivados)
         <div class="header-container">
             <a href="dashboard.php" class="header-logo">
                 <i class="fas fa-crown" style="color: var(--color-dorado); font-size: 1.8rem;"></i>
-                <span class="header-logo-text">Ortodoncia Uchuya Premium - Meilyng "Tingo María"</span>
+                <span class="header-logo-text">Ortodoncia Uchuya Premium de Meilyng - Tingo María</span>
             </a>
             <nav class="header-nav">
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 8px;">

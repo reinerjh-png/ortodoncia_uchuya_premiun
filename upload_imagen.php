@@ -66,8 +66,8 @@ if ($archivo['size'] > $max_size) {
     exit;
 }
 
-// Crear directorio si no existe
-$directorio = 'uploads/pacientes/' . $paciente_id;
+// Crear directorio usando numero_historia (no el ID interno)
+$directorio = 'uploads/pacientes/' . $paciente['numero_historia'];
 if (!is_dir($directorio)) {
     mkdir($directorio, 0755, true);
 }

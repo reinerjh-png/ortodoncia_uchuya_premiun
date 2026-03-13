@@ -33,8 +33,8 @@ if ($_SESSION['comunicado_bienvenida'] && $_SESSION['comunicado_callcenter'] && 
     return;
 }
 
-// ── 1. Bienvenida y Citas de Hoy (a partir de las 9:00 AM) ───
-if ($horaActual >= 9 && $horaActual < 11 && !$_SESSION['comunicado_bienvenida']) {
+// ── 1. Bienvenida y Citas de Hoy (a partir de las 8:00 AM) ───
+if ($horaActual >= 8 && $horaActual < 11 && !$_SESSION['comunicado_bienvenida']) {
     // Contar citas agendadas para hoy
     $stmtHoy = $pdo->query(
         "SELECT COUNT(*) FROM pacientes 
@@ -45,12 +45,12 @@ if ($horaActual >= 9 && $horaActual < 11 && !$_SESSION['comunicado_bienvenida'])
 
     $comunicado_activo  = true;
     $comunicado_titulo  = "¡Bienvenido al Sistema!";
-    $comunicado_mensaje = "Bienvenido(a) al sistema de la Clínica Dental Uchuya Premium de Meilyng, hoy tienes {$citasHoy} citas agendadas.";
+    $comunicado_mensaje = "Bienvenido(a) al sistema de la Clínica Dental Uchuya Premium de Meilyng, hoy tienes {$citasHoy} citas agendadas, ¡Revisa el listado de Citas para más detalles!.";
     $comunicado_tipo    = "info";
     $_SESSION['comunicado_bienvenida'] = true;
 
 // ── 2. Recordatorio Call Center (a partir de las 11:00 AM) ───
-} elseif ($horaActual >= 11 && !$_SESSION['comunicado_callcenter']) {
+} elseif ($horaActual >= 11 && $horaActual <= 15 && !$_SESSION['comunicado_callcenter']) {
     $comunicado_activo  = true;
     $comunicado_titulo  = "Recordatorio — Call Center";
     $comunicado_mensaje = "Recuerda llamar a los pacientes registrados en el Call Center para confirmar o agendar sus citas.";

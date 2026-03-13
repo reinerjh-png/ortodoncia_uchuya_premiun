@@ -379,8 +379,14 @@ function eliminarImagenPaciente($pdo, $imagen_id) {
         return false;
     }
     
+    // Obtener numero_historia del paciente para la ruta de la carpeta
+    $stmtPac = $pdo->prepare("SELECT numero_historia FROM pacientes WHERE id = ?");
+    $stmtPac->execute([$imagen['paciente_id']]);
+    $pac = $stmtPac->fetch();
+    $carpeta = $pac ? $pac['numero_historia'] : $imagen['paciente_id'];
+    
     // Eliminar archivo físico
-    $ruta = 'uploads/pacientes/' . $imagen['paciente_id'] . '/' . $imagen['nombre_archivo'];
+    $ruta = 'uploads/pacientes/' . $carpeta . '/' . $imagen['nombre_archivo'];
     if (file_exists($ruta)) {
         unlink($ruta);
     }
@@ -400,9 +406,13 @@ function eliminarPaciente($pdo, $id) {
     try {
         $pdo->beginTransaction();
         
-        // 1. Obtener imágenes del paciente para borrarlas del disco
+        // 1. Obtener numero_historia para la ruta de la carpeta
+        $paciente = obtenerPacientePorId($pdo, $id);
+        $carpeta = $paciente ? $paciente['numero_historia'] : $id;
+        
+        // Obtener imágenes del paciente para borrarlas del disco
         $imagenes = obtenerImagenesPaciente($pdo, $id);
-        $directorio = 'uploads/pacientes/' . $id;
+        $directorio = 'uploads/pacientes/' . $carpeta;
         
         // Borrar archivos físicos
         foreach ($imagenes as $img) {

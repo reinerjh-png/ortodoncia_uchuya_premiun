@@ -311,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="imagenes-grid" id="imagenesGrid">
                         <?php foreach ($imagenesPaciente as $img): ?>
                             <div class="imagen-item" data-id="<?php echo $img['id']; ?>">
-                                <img src="uploads/pacientes/<?php echo $id; ?>/<?php echo htmlspecialchars($img['nombre_archivo']); ?>" 
+                                <img src="uploads/pacientes/<?php echo htmlspecialchars($paciente['numero_historia']); ?>/<?php echo htmlspecialchars($img['nombre_archivo']); ?>" 
                                      alt="<?php echo htmlspecialchars($img['nombre_original']); ?>">
                                 <div class="imagen-overlay">
                                     <span class="imagen-nombre"><?php echo htmlspecialchars($img['nombre_original']); ?></span>
