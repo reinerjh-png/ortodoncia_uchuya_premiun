@@ -94,7 +94,16 @@ $totalActividad = $pdo->query("SELECT COUNT(*) FROM actividad_log WHERE DATE(cre
                 </div>
                 <div>
                     <p style="color: var(--color-gris); font-size: 0.85rem; margin-bottom: 4px;">Base de datos</p>
-                    <p style="color: var(--color-blanco); font-weight: 600;"><?php echo DB_NAME; ?></p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <p style="color: var(--color-blanco); font-weight: 600; margin: 0;"><?php echo DB_NAME; ?></p>
+                        <a href="export_db.php" 
+                           title="Descargar backup de la base de datos"
+                           style="display: inline-flex; align-items: center; gap: 6px; background: rgba(212,175,55,0.15); color: var(--color-dorado); border: 1px solid rgba(212,175,55,0.3); padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-decoration: none; transition: all 0.3s ease; cursor: pointer;"
+                           onmouseover="this.style.background='rgba(212,175,55,0.3)'; this.style.borderColor='var(--color-dorado)';"
+                           onmouseout="this.style.background='rgba(212,175,55,0.15)'; this.style.borderColor='rgba(212,175,55,0.3)';">
+                            <i class="fas fa-download" style="font-size: 0.7rem;"></i> Descargar BD
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
